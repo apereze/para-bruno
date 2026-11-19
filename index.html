@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#ff6a13">
+<title>Lovegotchi</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#2a3322; --mid:#6d7a5a; --lcd:#b9c6a0; --lcd2:#aebb94;
+    --shell1:#ffb04a; --shell2:#ff6a13; --btn:#ffd84d; --btn2:#e0b21f;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%}
+  body{
+    min-height:100dvh; display:flex; align-items:center; justify-content:center;
+    font-family:"VT323",ui-monospace,monospace; color:var(--ink);
+    background:#fff1e0;
+    background-image:radial-gradient(#ffd2a3 1.5px,transparent 1.6px);
+    background-size:22px 22px; overflow-x:hidden; padding:24px 8px;
+  }
+  /* carcasa en forma de huevo */
+  .egg{
+    position:relative; width:min(94vw,370px);
+    padding:46px 26px 34px;
+    background:radial-gradient(circle at 30% 22%,#ffe2b8 0 12%,transparent 13%),
+               linear-gradient(160deg,var(--shell1),var(--shell2));
+    border-radius:50% 50% 46% 46% / 40% 40% 34% 34%;
+    box-shadow:inset -10px -14px 0 rgba(0,0,0,.12), inset 8px 8px 0 rgba(255,255,255,.25),
+               0 14px 0 #c4500a, 0 22px 30px rgba(120,50,10,.35);
+  }
+  .egg::before{ /* argolla del llavero */
+    content:""; position:absolute; top:-26px; left:50%; transform:translateX(-50%);
+    width:34px; height:34px; border:7px solid #d7d7d7; border-radius:50%;
+    box-shadow:inset 0 0 0 2px #aaa;
+  }
+  .logo{
+    text-align:center; font-family:"Press Start 2P",monospace; font-size:13px; color:#fff;
+    text-shadow:2px 2px 0 #c4500a; letter-spacing:1px; margin-bottom:4px;
+  }
+  .model{text-align:center;font-family:"Press Start 2P",monospace;font-size:7px;color:#fff0dc;margin-bottom:12px}
+  .bezel{
+    background:#fff8ef; border-radius:22px; padding:12px;
+    box-shadow:inset 0 4px 0 rgba(0,0,0,.12), 0 2px 0 rgba(255,255,255,.6);
+  }
+  .lcd{
+    position:relative; background:var(--lcd); border-radius:8px; padding:8px 10px 12px;
+    background-image:
+      repeating-linear-gradient(0deg,transparent 0 3px,rgba(0,0,0,.035) 3px 4px),
+      repeating-linear-gradient(90deg,transparent 0 3px,rgba(0,0,0,.035) 3px 4px);
+    box-shadow:inset 0 0 0 3px var(--lcd2), inset 3px 3px 8px rgba(0,0,0,.18);
+    min-height:300px; text-align:center;
+  }
+  .status{display:flex;justify-content:space-between;align-items:center;font-size:18px;line-height:1}
+  .meter{display:flex;align-items:center;gap:4px}
+  .meter svg{width:14px;height:12px}
+  .bar{display:flex;gap:2px}
+  .bar i{display:block;width:6px;height:10px;border:1.5px solid var(--ink)}
+  .bar i.on{background:var(--ink)}
+  .stage{height:112px;display:flex;align-items:flex-end;justify-content:center;margin:4px 0 2px}
+  #pet{width:96px;height:96px;shape-rendering:crispEdges;fill:var(--ink)}
+  #pet .mid{fill:var(--mid)}
+  .bob{animation:bob 1s steps(1) infinite}
+  .shake{animation:shake .25s steps(2) infinite}
+  .jump{animation:jump .5s steps(1) infinite}
+  @keyframes bob{0%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+  @keyframes shake{0%{transform:translateX(-2px)}50%{transform:translateX(2px)}}
+  @keyframes jump{0%{transform:translateY(0)}50%{transform:translateY(-14px)}}
+  .msg{min-height:22px;font-size:20px;color:var(--mid);line-height:1.05}
+  .q{font-size:24px;line-height:1.05;margin-top:4px}
+  .final{font-size:36px;line-height:1;margin-top:6px;animation:blink 1s steps(1) infinite}
+  .final small{display:block;font-size:20px;margin-top:8px;animation:none}
+  @keyframes blink{50%{opacity:.35}}
+  .math p{margin:4px 0;font-size:20px;line-height:1.05}
+  .math .prob{font-size:22px;border-top:2px dashed var(--ink);border-bottom:2px dashed var(--ink);padding:6px 0}
+  .math textarea{
+    width:100%;height:58px;resize:none;background:transparent;border:2px solid var(--ink);
+    font-family:inherit;font-size:20px;color:var(--ink);padding:4px;border-radius:4px;outline:none;
+  }
+  .row{display:flex;gap:6px;justify-content:center;margin-top:6px;flex-wrap:wrap}
+  .lcdbtn{
+    font-family:inherit;font-size:20px;color:var(--ink);background:transparent;
+    border:2px solid var(--ink);border-radius:4px;padding:2px 8px;cursor:pointer;
+  }
+  .lcdbtn:active{background:var(--ink);color:var(--lcd)}
+  .tiny{font-size:16px !important;color:var(--mid)}
+  [hidden]{display:none !important}
+  /* botones físicos */
+  .btns{display:flex;justify-content:space-around;align-items:center;margin-top:22px}
+  .slot{width:76px;height:76px;display:flex;align-items:center;justify-content:center}
+  .slot.small{width:52px;height:52px;margin-top:30px}
+  .btn{
+    width:68px;height:68px;border-radius:50%;border:none;cursor:pointer;
+    background:radial-gradient(circle at 35% 30%,#fff3b0 0 18%,var(--btn) 19%);
+    box-shadow:0 6px 0 var(--btn2),0 8px 10px rgba(0,0,0,.25);
+    font-family:"VT323",monospace;font-size:30px;color:#7a4b00;
+    transition:transform .2s; touch-action:manipulation; -webkit-tap-highlight-color:transparent;
+  }
+  .btn:active{box-shadow:0 2px 0 var(--btn2);translate:0 4px}
+  .btn.mid{width:44px;height:44px;font-size:22px}
+  #yes{transform-origin:center}
+  #no.loose{position:fixed;z-index:50;transition:left .18s ease-out,top .18s ease-out}
+  .floaty{position:fixed;bottom:-40px;z-index:40;pointer-events:none;width:28px;height:24px;
+    fill:#ff4d1a;animation:rise 3.2s linear forwards}
+  @keyframes rise{to{transform:translateY(-110vh) rotate(25deg);opacity:0}}
+</style>
+</head>
+<body>
+<div class="egg">
+  <div class="logo">LOVEGOTCHI</div>
+  <div class="model">MODELO B-RUNO 01</div>
+  <div class="bezel">
+    <div class="lcd">
+      <div class="status">
+        <div class="meter" title="amor"><span>AMOR</span><span id="hearts"></span></div>
+        <div id="clock">--:--</div>
+      </div>
+      <div class="status" style="margin-top:2px">
+        <div class="meter" title="nervios"><span>NERVIOS</span><span class="bar" id="nerves"></span></div>
+      </div>
+
+      <div class="stage"><svg id="pet" class="bob" viewBox="0 0 16 16"></svg></div>
+      <div id="msg" class="msg" aria-live="polite"></div>
+
+      <div id="ask" class="q">BRUNO, ENTONCES ¿SÍ TE VEO MAÑANA PARA UNA CENA ROMÁNTICA CON GANAS DE QUE PIENSES MÁS EN MÍ?</div>
+
+      <form id="math" class="math" hidden>
+        <p>OK, PUEDES DECIR QUE NO... PERO PRIMERO RESUELVE ESTO:</p>
+        <p id="prob" class="prob"></p>
+        <textarea id="ans" placeholder="TU DEMOSTRACIÓN AQUÍ..."></textarea>
+        <div class="row">
+          <button type="submit" class="lcdbtn">ENVIAR</button>
+          <button type="button" class="lcdbtn" id="giveup">MEJOR DIGO QUE SÍ</button>
+        </div>
+        <p id="verdict" class="tiny"></p>
+        <p class="tiny">PREMIO: 1 000 000 USD DEL INSTITUTO CLAY. IGUAL TIENES QUE IR A CENAR.</p>
+      </form>
+
+      <div id="final" class="final" hidden>¡SOY EL MÁS FELIZ DEL MUNDO!<small>NOS VEMOS MAÑANA</small></div>
+    </div>
+  </div>
+  <div class="btns">
+    <div class="slot"><button id="yes" class="btn">SÍ</button></div>
+    <div class="slot small"><button id="mid" class="btn mid" aria-label="acariciar">♥</button></div>
+    <div class="slot"><button id="no" class="btn">NO</button></div>
+  </div>
+</div>
+
+<script>
+// ---------- sprites (16x16, '#' = pixel) ----------
+const BODY = [
+  "................",
+  ".....######.....",
+  "...##......##...",
+  "..#..........#..",
+  ".#............#.",
+  ".#............#.",
+  "#..............#",
+  "#..............#",
+  "#..............#",
+  "#..............#",
+  "#..............#",
+  ".#............#.",
+  ".#............#.",
+  "..#..........#..",
+  "...##......##...",
+  ".....######....."
+];
+const FACES = {
+  normal:  { ink:[[4,6],[5,6],[4,7],[5,7],[10,6],[11,6],[10,7],[11,7],[5,10],[10,10],[6,11],[7,11],[8,11],[9,11]] },
+  nervous: { ink:[[5,6],[5,7],[10,6],[10,7],[5,11],[6,10],[7,11],[8,10],[9,11],[10,10]],
+             mid:[[15,1],[14,2],[15,2],[14,3],[15,3]] },
+  sad:     { ink:[[4,7],[5,7],[10,7],[11,7],[6,10],[7,10],[8,10],[9,10],[5,11],[10,11]],
+             mid:[[4,8],[4,9],[11,8],[11,9]] },
+  happy:   { ink:[[4,7],[5,6],[6,7],[9,7],[10,6],[11,7],[5,10],[6,10],[7,10],[8,10],[9,10],[10,10],[6,11],[7,11],[8,11],[9,11],[7,12],[8,12]],
+             mid:[[2,9],[3,9],[12,9],[13,9]] }
+};
+const HEART_FULL  = [".##.##.","#######","#######",".#####.","..###..","...#..."];
+const HEART_EMPTY = [".##.##.","#..#..#","#.....#",".#...#.","..#.#..","...#..."];
+
+const rect = (x,y,c='') => `<rect ${c?`class="${c}"`:''} x="${x}" y="${y}" width="1" height="1"/>`;
+const fromRows = rows => rows.flatMap((r,y)=>[...r].map((c,x)=>c==='#'?rect(x,y):'')).join('');
+const heartSVG = full => `<svg viewBox="0 0 7 6" shape-rendering="crispEdges" fill="currentColor">${fromRows(full?HEART_FULL:HEART_EMPTY)}</svg>`;
+
+const $ = id => document.getElementById(id);
+const pet = $('pet'), msg = $('msg'), yesBtn = $('yes'), noBtn = $('no');
+
+function drawPet(mood, anim){
+  const f = FACES[mood];
+  pet.innerHTML = fromRows(BODY) + f.ink.map(p=>rect(...p)).join('') + (f.mid||[]).map(p=>rect(...p,'mid')).join('');
+  pet.setAttribute('class', anim);
+}
+function drawHearts(n){ $('hearts').innerHTML = [0,1,2,3].map(i=>heartSVG(i<n)).join(''); }
+function drawNerves(n){ $('nerves').innerHTML = Array.from({length:MAX},(_,i)=>`<i class="${i<n?'on':''}"></i>`).join(''); }
+function tick(){ const d=new Date(); $('clock').textContent = String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0'); }
+
+// ---------- estado ----------
+const MAX = 7;
+let state = 'ask', dodges = 0, mathTries = 0, probIdx = 0;
+const DODGE_MSG = [
+  "¿SEGURO? PIÉNSALO...",
+  "EL BOTÓN NO QUIERE",
+  "OYE, NO HUYAS...",
+  "MI CORAZÓN DE 8 BITS SE AGRIETA",
+  "¿NI POR UN POSTRE?",
+  "EL SÍ ESTÁ CRECIENDO. ES UNA SEÑAL.",
+  "BUENO... YA PUEDES PICARLE. SI TE ATREVES."
+];
+const PROBLEMS = [
+  "DEMUESTRA QUE TODOS LOS CEROS NO TRIVIALES DE LA FUNCIÓN ZETA DE RIEMANN TIENEN PARTE REAL 1/2.",
+  "DEMUESTRA QUE PARA TODO CAMPO INICIAL SUAVE EN R³ LAS ECUACIONES DE NAVIER–STOKES TIENEN SOLUCIÓN SUAVE PARA TODO t > 0.",
+  "DEMUESTRA QUE P = NP (O QUE P ≠ NP, TE DEJO ESCOGER).",
+  "DEMUESTRA QUE LA SUCESIÓN n → n/2 (SI ES PAR), n → 3n+1 (SI ES IMPAR) SIEMPRE LLEGA A 1."
+];
+const VERDICTS = [
+  "INCORRECTO. LE FALTÓ RIGOR. SIGUIENTE:",
+  "INCORRECTO. EL REVISOR 2 LO RECHAZA. SIGUIENTE:",
+  "CASI... NO. SIGUIENTE:",
+  "INCORRECTO. ¿YA VISTE QUE EL BOTÓN DE SÍ SIGUE AHÍ?"
+];
+
+function moveNo(){
+  const r = noBtn.getBoundingClientRect(), pad = 12;
+  const W = innerWidth - r.width - 2*pad, H = innerHeight - r.height - 2*pad;
+  let x, y, t = 0;
+  do { x = pad + Math.random()*W; y = pad + Math.random()*H; t++; }
+  while (t < 25 && Math.hypot(x - r.left, y - r.top) < 160);
+  if (!noBtn.classList.contains('loose')){
+    noBtn.style.left = r.left + 'px'; noBtn.style.top = r.top + 'px';
+    noBtn.classList.add('loose'); void noBtn.offsetWidth;   // fija posición inicial antes de animar
+  }
+  noBtn.style.left = x + 'px'; noBtn.style.top = y + 'px';
+}
+function dodge(e){
+  if (state !== 'ask' || dodges >= MAX) return false;
+  if (e) e.preventDefault();
+  dodges++;
+  moveNo();
+  yesBtn.style.transform = `scale(${1 + 0.1*dodges})`;   // el SÍ crece con cada intento
+  msg.textContent = DODGE_MSG[dodges-1];
+  drawNerves(dodges);
+  if (dodges >= MAX) drawPet('normal','bob');
+  else drawPet(dodges >= 4 ? 'sad' : 'nervous', 'shake');
+  return true;
+}
+noBtn.addEventListener('pointerenter', e => { if (e.pointerType === 'mouse') dodge(e); });
+noBtn.addEventListener('touchstart', e => { if (dodges < MAX) dodge(e); }, {passive:false});
+noBtn.addEventListener('click', e => { if (dodges < MAX) { dodge(e); return; } if (state === 'ask') showMath(); });
+
+function showMath(){
+  state = 'math';
+  noBtn.hidden = true;
+  $('ask').hidden = true; $('math').hidden = false;
+  msg.textContent = "";
+  $('prob').textContent = PROBLEMS[probIdx];
+  drawPet('nervous','bob');
+}
+$('math').addEventListener('submit', e => {
+  e.preventDefault();
+  const a = $('ans').value.trim();
+  if (!a){ $('verdict').textContent = "NI LO INTENTASTE :)"; return; }
+  $('verdict').textContent = VERDICTS[Math.min(mathTries, VERDICTS.length-1)];
+  mathTries++;
+  probIdx = (probIdx + 1) % PROBLEMS.length;
+  $('prob').textContent = PROBLEMS[probIdx];
+  $('ans').value = "";
+});
+$('giveup').addEventListener('click', sayYes);
+yesBtn.addEventListener('click', sayYes);
+
+function sayYes(){
+  if (state === 'yes') return;
+  state = 'yes';
+  noBtn.hidden = true;
+  $('ask').hidden = true; $('math').hidden = true; $('final').hidden = false;
+  msg.textContent = "";
+  yesBtn.style.transform = ''; yesBtn.textContent = '♥';
+  drawPet('happy','jump'); drawNerves(0);
+  let h = 0; const fill = setInterval(() => { drawHearts(++h); if (h >= 4) clearInterval(fill); }, 350);
+  let n = 0; const rain = setInterval(() => { spawnHeart(); if (++n > 60) clearInterval(rain); }, 120);
+}
+function spawnHeart(){
+  const s = document.createElementNS('http://www.w3.org/2000/svg','svg');
+  s.setAttribute('viewBox','0 0 7 6'); s.setAttribute('shape-rendering','crispEdges');
+  s.classList.add('floaty'); s.innerHTML = fromRows(HEART_FULL);
+  const k = 0.7 + Math.random()*1.2;
+  s.style.left = Math.random()*100 + 'vw';
+  s.style.width = 28*k + 'px'; s.style.height = 24*k + 'px';
+  s.style.animationDuration = (2.4 + Math.random()*2) + 's';
+  document.body.appendChild(s);
+  s.addEventListener('animationend', () => s.remove());
+}
+
+// botón central: caricia al tamagotchi
+$('mid').addEventListener('click', () => {
+  if (state === 'yes') { for (let i=0;i<8;i++) spawnHeart(); return; }
+  drawPet('happy','jump'); msg.textContent = "PSST... PICA EL SÍ";
+  setTimeout(() => { if (state !== 'yes') drawPet(dodges ? 'nervous' : 'normal', 'bob'); }, 1200);
+});
+
+// mantener el NO dentro de la pantalla si cambia el tamaño
+addEventListener('resize', () => {
+  if (!noBtn.classList.contains('loose')) return;
+  const r = noBtn.getBoundingClientRect();
+  noBtn.style.left = Math.min(r.left, innerWidth - r.width - 12) + 'px';
+  noBtn.style.top  = Math.min(r.top, innerHeight - r.height - 12) + 'px';
+});
+
+drawPet('normal','bob'); drawHearts(1); drawNerves(0); tick(); setInterval(tick, 10000);
+</script>
+</body>
+</html>
